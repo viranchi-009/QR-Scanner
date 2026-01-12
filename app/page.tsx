@@ -34,7 +34,6 @@ function QRCodeScanner({ triggerComp, onScanComplete, disabled }: IProps) {
       const newValue = results[0].rawValue;
       setscannedData(newValue);
       if (onScanComplete) await onScanComplete(newValue);
-      setIsOpen(false);
     } catch (error) {
       console.log(error);
     } finally {
@@ -44,72 +43,77 @@ function QRCodeScanner({ triggerComp, onScanComplete, disabled }: IProps) {
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleModalToggle}>
-      <DialogTrigger disabled={disabled} asChild>
-        {triggerComp ? (
-          triggerComp
-        ) : (
-          <button
-            type="button"
-            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
-          >
-            Start QR Scanner
-          </button>
-        )}
-      </DialogTrigger>
-      <DialogContent className="h-[60vh] w-[85vw] lg:h-[80vh] rounded-lg p-4 flex flex-col items-center text-center">
-        <DialogHeader className="w-full">
-          <DialogTitle className="text-[0.9rem] 2xl:text-[1rem] mt-2 font-medium text-center w-full">
-            Scan QR
-          </DialogTitle>
-        </DialogHeader>
-        <div className="">
-          <select
-            className="p-2 border rounded-md"
-            value={deviceId}
-            onChange={(e) => setDeviceId(e.target.value)}
-          >
-            <option value="">Default Camera</option>
-            {devices.map((device) => (
-              <option key={device.deviceId} value={device.deviceId}>
-                {device.label || `Camera ${device.deviceId}`}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="w-full max-w-md space-y-3 md:my-4">
-          {isOpen && (
-            <Scanner
-              onScan={handleScan}
-              //allowMultiple
-              formats={["qr_code", "linear_codes"]}
-              components={{
-                // onOff: true,
-                finder: true,
-                zoom: true,
-                tracker: boundingBox,
-                torch: true,
-              }}
-              paused={isProcessing}
-            />
+    <div className="flex items-center justify-center w-full h-full py-60">
+      <Dialog open={isOpen} onOpenChange={handleModalToggle}>
+        <DialogTrigger disabled={disabled} asChild>
+          {triggerComp ? (
+            triggerComp
+          ) : (
+            <button
+              type="button"
+              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+            >
+              Start QR Scanner
+            </button>
           )}
-
-          <div className="mt-6 p-4 bg-white rounded-md shadow">
-            <h2 className="text-lg font-medium mb-2">Scanned Results</h2>
-            <ul className="text-left text-sm space-y-1">{scannedData}</ul>
+        </DialogTrigger>
+        <DialogContent className="h-[60vh] w-[85vw] lg:h-[80vh] rounded-lg p-4 flex flex-col items-center text-center">
+          <DialogHeader className="w-full">
+            <DialogTitle className="text-[0.9rem] 2xl:text-[1rem] mt-2 font-medium text-center w-full">
+              Scan QR
+            </DialogTitle>
+          </DialogHeader>
+          <div className="">
+            <select
+              className="p-2 border rounded-md"
+              value={deviceId}
+              onChange={(e) => setDeviceId(e.target.value)}
+            >
+              <option value="">Default Camera</option>
+              {devices.map((device) => (
+                <option key={device.deviceId} value={device.deviceId}>
+                  {device.label || `Camera ${device.deviceId}`}
+                </option>
+              ))}
+            </select>
           </div>
-        </div>
-        <DialogFooter>
-          <Button
-            type="button"
-            onClick={() => handleModalToggle(false)}
-            className="w-[24vw] md:w-[16vw]"
-          >
-            Close
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          <div className="w-full max-w-md space-y-3 md:my-4">
+            {isOpen && (
+              <Scanner
+                onScan={handleScan}
+                constraints={{
+                  deviceId: deviceId,
+                }}
+                //allowMultiple
+                formats={["qr_code", "linear_codes"]}
+                components={{
+                  // onOff: true,
+                  finder: true,
+                  zoom: true,
+                  tracker: boundingBox,
+                  torch: true,
+                }}
+                paused={isProcessing}
+              />
+            )}
+
+            <div className="mt-6 p-4 bg-white rounded-md shadow">
+              <h2 className="text-lg font-medium mb-2">Scanned Results</h2>
+              <ul className="text-left text-sm space-y-1">{scannedData}</ul>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              type="button"
+              onClick={() => handleModalToggle(false)}
+              className="w-[24vw] md:w-[16vw]"
+            >
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }
 
