@@ -83,6 +83,11 @@ function QRCodeScanner({ triggerComp, onScanComplete, disabled }: IProps) {
                 onScan={handleScan}
                 constraints={{
                   deviceId: deviceId,
+                  facingMode: "environment", // Use rear camera
+                  aspectRatio: 1, // Square aspect ratio
+                  // Advanced constraints
+                  width: { ideal: 1920 },
+                  height: { ideal: 1080 },
                 }}
                 //allowMultiple
                 formats={["qr_code", "linear_codes"]}
